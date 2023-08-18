@@ -10,13 +10,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2  # Acción para clonar el repositorio en el entorno de trabajo
 
-    - name: Set up GCC
-      uses: actions/setup-java@v2  # Configura el entorno con GCC (compilador C)
-      with:
-        distribution: 'gcc'
-        java-version: '11'  # Esta línea es un error en el original, debería ser gcc-version
-
     - name: Build C project
       run: |
         cd proyecto1  # Navegar a la carpeta del proyecto
-        gcc -o my_program main.c  # compilando programa
+        gcc -o my_program main.c  # compila el proyecto
