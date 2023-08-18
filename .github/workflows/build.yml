@@ -10,13 +10,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2  # Acción para clonar el repositorio en el entorno de trabajo
 
+    - name: Install GCC
+      run: sudo apt-get update && sudo apt-get install -y gcc
+
     - name: Build C project
       run: |
         cd proyecto1  # Navegar a la carpeta del proyecto
-        gcc -o ejecutableProyecto1 main.c  # compila el proyecto y genera el ejecutable
+        gcc -o ejecutableProyecto1.exe main.c -mwindows  # compila el proyecto y genera el ejecutable para Windows
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: ejecutableProyecto1
-        path: proyecto1/ejecutableProyecto1  # Ruta al archivo ejecutable compilado que deseas subir
+        path: proyecto1/ejecutableProyecto1.exe  # Ruta al archivo ejecutable compilado para Windows
