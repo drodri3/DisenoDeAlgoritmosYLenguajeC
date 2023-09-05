@@ -1,15 +1,35 @@
 #include <stdio.h>
 #include <string.h>
 
+struct Libro
+{
+    char titulo[100];
+    char fechaPrestamo[100];
+
+    
+    
+    int estado;
+    int multa;
+};
+
 struct Usuario
 {
     char correo[100];
     char nombre[50];
     char apellido[50];
     char contrasena[50];
-    int tieneMultas;
-    int tienePrestamo;
+    //agregar array para multiples libros con fecha de prestamo
+    Libro libros[100];
+
+
+
 };
+
+
+int multaPorDia = 50;
+
+
+
 
 void imprimirMenuPrincipal()
 {
@@ -76,6 +96,8 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
 void solicitarPrestamo(struct Usuario *usuario)
 {
     printf("Función: Solicitar un préstamo para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
+    //validar si hay libros prestados, si hay prestados hay que llamar el menu de multas
+    //menu para pedir libro
 }
 
 void devolverLibro(struct Usuario *usuario)
@@ -99,9 +121,33 @@ void reportarPerdida(struct Usuario *usuario)
     printf("Pérdida reportada para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
 }
 
+void tieneMulta(struct Usuario *usuario)
+{
+    printf("Función: tiene multa para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
+}
+
+void tienePrestamo(struct Usuario *usuario)
+{
+    printf("Función: tiene prestamo para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
+}
+
+
+
 int main()
 {
     struct Usuario usuarios[100];
+
+    // Inicializar usuarios
+    
+    usuarios[0]=(struct Usuario){"
+    ", "Juan", "Perez", "123", 0, 0};
+    usuarios[1]=(struct Usuario){"
+    ", "Maria", "Lopez", "456", 0, 0};
+    usuarios[2]=(struct Usuario){"
+    ", "Pedro", "Gomez", "789", 0, 0};
+    
+
+
     int numUsuarios = 0;
 
     int opcion;
