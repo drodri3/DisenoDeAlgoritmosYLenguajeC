@@ -3,19 +3,12 @@
 #include <time.h>
 
 
+
 struct Libro
 {
     char titulo[100];
+    
     struct tm fechaPrestamo; // Campo para la fecha de préstamo
-    int estado; // 0 para disponible, 1 para prestado
-    int multa;
-};
-
-struct Libro
-{
-    char titulo[100];
-    char fechaPrestamo[100];
-
     
     
     int estado;
@@ -207,12 +200,7 @@ int main()
 
     // Inicializar usuarios
     
-    usuarios[0]=(struct Usuario){"
-    ", "Juan", "Perez", "123", 0, 0};
-    usuarios[1]=(struct Usuario){"
-    ", "Maria", "Lopez", "456", 0, 0};
-    usuarios[2]=(struct Usuario){"
-    ", "Pedro", "Gomez", "789", 0, 0};
+
     
 
 
