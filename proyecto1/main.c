@@ -11,6 +11,17 @@ struct Libro
     int multa;
 };
 
+struct Libro
+{
+    char titulo[100];
+    char fechaPrestamo[100];
+
+    
+    
+    int estado;
+    int multa;
+};
+
 struct Usuario
 {
     char correo[100];
@@ -193,6 +204,18 @@ int tienePrestamo(struct Usuario *usuario)
 int main()
 {
     struct Usuario usuarios[100];
+
+    // Inicializar usuarios
+    
+    usuarios[0]=(struct Usuario){"
+    ", "Juan", "Perez", "123", 0, 0};
+    usuarios[1]=(struct Usuario){"
+    ", "Maria", "Lopez", "456", 0, 0};
+    usuarios[2]=(struct Usuario){"
+    ", "Pedro", "Gomez", "789", 0, 0};
+    
+
+
     int numUsuarios = 0;
 
     //imprimir dia actual
