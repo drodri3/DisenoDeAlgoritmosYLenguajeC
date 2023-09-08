@@ -90,25 +90,26 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
 void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int tamanoBiblioteca)
 {
     // aca hay que meter la informacion del libro en el array de libros del usuario, agregar que fecha se presto y cambiar el estado del libro a prestado
-    int contador = 1;
+    int contador = 0;
     int opcion;
     int cantidadDeLibrosDelUsuario = usuario->numLibros;
     printf("Función: Solicitar un préstamo para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
-    printf("Seleccion el libro de la biblioteca que desea solicitar:\n");
+    printf("Libros disponibles en la Biblioteca:\n");
     // Imprimir libros disponibles
-    for (int i = 0; i <= tamanoBiblioteca; i++)
+    for (int i = 0; i < tamanoBiblioteca; i++)
     {
         if (biblioteca[i].estado == 0)
         {
-            printf("%d. %s\n", contador, biblioteca[i].titulo);
+            printf("  %d. %s\n", i, biblioteca[i].titulo);
             contador++;
-        }
+        }      
     }
-    printf("%d. Salir\n", contador);
+    printf("  %d. Salir\n", contador + 1);
+    printf("Seleccione el libro que desea solicitar: ");  
     scanf("%d", &opcion);
     // Registrar prestamo
-    if (opcion < contador)
-    {
+    if (opcion <= contador)
+    {        
         biblioteca[opcion].estado = 1;
         usuario->libros[cantidadDeLibrosDelUsuario].estado = biblioteca[opcion].estado;
         strcpy(usuario->libros[cantidadDeLibrosDelUsuario].titulo, biblioteca[opcion].titulo);
@@ -123,20 +124,56 @@ void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int t
     }
 }
 
-void devolverLibro(struct Usuario *usuario)
+void devolverLibro(struct Usuario *usuario, struct Libro biblioteca[], int tamanoBiblioteca)
 {
     int opcion;
     printf("Función: Devolver un libro para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
     // aca hay que meter todo lo de devolver un libro, tanto el costo de pagar por dias sin pagar, como el costo si se extravio
 
-    // Imprimir la lista de libros.
-    printf("Libros prestados:\n");
-    printf("Num libros: %d\n", usuario->numLibros);
-    for (int i = 0; i < usuario->numLibros; i++)
-    {
-        printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
+    if (usuario->numLibros == 0) {
+
+        printf("  No tiene libros por devolver.\n ");
+
+    } else {
+    
+        // Imprimir la lista de libros.
+        printf("Libros prestados: %d\n", usuario->numLibros);
+        for (int i = 0; i < usuario->numLibros; i++)
+        {
+            // recorre el arreglo biblioteca para determinar el índice del libro 
+            for (int j = 0; j < tamanoBiblioteca; j ++) {
+                // verifica el índice en el arreglo biblioteca para mostrarlo a la hora de imprimir en pantalla el libro prestado
+                if (strcmp(usuario->libros[i].titulo, biblioteca[j].titulo) == 0) {
+                    printf("    %d. %s.\n", i + 1, usuario->libros[i].titulo);
+                }
+            }
+        }
+        printf("      Seleccione el libro que desea devolver: ");
+        scanf("%d", &opcion);
+
+        if (opcion > tamanoBiblioteca) {
+            printf("  Seleccione un libro válido.");        
+        } else {
+
+            // marca como devuelto el libro en el arreglo de libros del usuario
+            usuario->libros[opcion - 1].estado = 0;
+            // recorre el arreglo biblioteca para determinar el índice del libro 
+            for (int j = 0; j < tamanoBiblioteca; j ++) {
+                // marca como devuelto el libro en el arreglo de la biblioteca
+                if (strcmp(usuario->libros[opcion - 1].titulo, biblioteca[j].titulo) == 0) {
+                    biblioteca[j].estado = 0;
+                }
+            }
+            usuario->numLibros --;
+            printf("  Libro devuelto a la biblioteca.");
+        }
+        
+        
+        
+    
+
     }
-    scanf("%d", opcion);
+
 }
 
 int calcularMultaPorDia(struct Libro *libro)
@@ -263,6 +300,7 @@ int main()
     strcpy(biblioteca[numLibros].titulo, "El Gran Divorcio");
     biblioteca[numLibros].estado = 0;
     biblioteca[numLibros].multa = 750;
+    numLibros++;
 
     // Agregar un usuario sin multas
     strcpy(usuarios[numUsuarios].correo, "a");
@@ -345,7 +383,7 @@ int main()
                             solicitarPrestamo(usuarioActual, biblioteca, numLibros);
                             break;
                         case 2:
-                            devolverLibro(usuarioActual);
+                            devolverLibro(usuarioActual, biblioteca, numLibros);
                             break;
                         case 3:
                             printf("Saliendo del menú de usuario.\n");
