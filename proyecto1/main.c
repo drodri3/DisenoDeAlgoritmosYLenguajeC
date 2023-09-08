@@ -1,16 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
-
-
+// Variables globales
+int dia, mes, anio;
 struct Libro
 {
     char titulo[100];
-    
     struct tm fechaPrestamo; // Campo para la fecha de préstamo
-    
-    
     int estado;
     int multa;
 };
@@ -22,7 +18,7 @@ struct Usuario
     char apellido[50];
     char contrasena[50];
     struct Libro libros[10]; // Cambiar el tamaño del array según sea necesario
-    int numLibros; // Número de libros prestados
+    int numLibros;           // Número de libros prestados
 };
 
 int multaPorDia = 75;
@@ -91,24 +87,62 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
     return -1;
 }
 
-void solicitarPrestamo(struct Usuario *usuario)
+void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int tamanoBiblioteca)
 {
+    // aca hay que meter la informacion del libro en el array de libros del usuario, agregar que fecha se presto y cambiar el estado del libro a prestado
+    int contador = 1;
+    int opcion;
+    int cantidadDeLibrosDelUsuario = usuario->numLibros;
     printf("Función: Solicitar un préstamo para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
-    //aca hay que meter la informacion del libro en el array de libros del usuario, agregar que fecha se presto y cambiar el estado del libro a prestado
-    
+    printf("Seleccion el libro de la biblioteca que desea solicitar:\n");
+    // Imprimir libros disponibles
+    for (int i = 0; i <= tamanoBiblioteca; i++)
+    {
+        if (biblioteca[i].estado == 0)
+        {
+            printf("%d. %s\n", contador, biblioteca[i].titulo);
+            contador++;
+        }
+    }
+    printf("%d. Salir\n", contador);
+    scanf("%d", &opcion);
+    // Registrar prestamo
+    if (opcion < contador)
+    {
+        biblioteca[opcion].estado = 1;
+        usuario->libros[cantidadDeLibrosDelUsuario].estado = biblioteca[opcion].estado;
+        strcpy(usuario->libros[cantidadDeLibrosDelUsuario].titulo, biblioteca[opcion].titulo);
+        usuario->libros[cantidadDeLibrosDelUsuario].multa = biblioteca[opcion].multa;
+        usuario->libros[cantidadDeLibrosDelUsuario].fechaPrestamo.tm_mday = dia;
+        usuario->libros[cantidadDeLibrosDelUsuario].fechaPrestamo.tm_mon = mes;
+        usuario->libros[cantidadDeLibrosDelUsuario].fechaPrestamo.tm_year = anio;
+
+        printf("Se ha solicitado el prestamo del libro %s de manera exitosa para el usuario %s.\n", usuario->libros[cantidadDeLibrosDelUsuario].titulo, usuario->nombre);
+
+        usuario->numLibros = ++cantidadDeLibrosDelUsuario;
+    }
 }
 
 void devolverLibro(struct Usuario *usuario)
 {
+    int opcion;
     printf("Función: Devolver un libro para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
-    //aca hay que meter todo lo de devolver un libro, tanto el costo de pagar por dias sin pagar, como el costo si se extravio
-}
+    // aca hay que meter todo lo de devolver un libro, tanto el costo de pagar por dias sin pagar, como el costo si se extravio
 
+    // Imprimir la lista de libros.
+    printf("Libros prestados:\n");
+    printf("Num libros: %d\n", usuario->numLibros);
+    for (int i = 0; i < usuario->numLibros; i++)
+    {
+        printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
+    }
+    scanf("%d", opcion);
+}
 
 int calcularMultaPorDia(struct Libro *libro)
 {
     int totalMulta = 0;
-    
+
     // Obtener la fecha y hora actual
     time_t tiempo = time(0);
     struct tm *tlocal = localtime(&tiempo);
@@ -122,7 +156,8 @@ int calcularMultaPorDia(struct Libro *libro)
     int diasDiferencia = tlocal->tm_mday - libro->fechaPrestamo.tm_mday;
 
     // Calcular la multa total
-    if (aniosDiferencia > 0 || (aniosDiferencia == 0 && mesesDiferencia > 0) || (aniosDiferencia == 0 && mesesDiferencia == 0 && diasDiferencia > 0)) {
+    if (aniosDiferencia > 0 || (aniosDiferencia == 0 && mesesDiferencia > 0) || (aniosDiferencia == 0 && mesesDiferencia == 0 && diasDiferencia > 0))
+    {
         totalMulta = (aniosDiferencia * 365 + mesesDiferencia * 30 + diasDiferencia) * multaPorDia;
     }
 
@@ -134,8 +169,6 @@ int calcularMultaPorExtravio(struct Libro *libro)
 
     return multaPorExtravio;
 }
-
-
 
 void cancelarMulta(struct Usuario *usuario)
 {
@@ -160,7 +193,7 @@ void cancelarMulta(struct Usuario *usuario)
 
     // Calcular la multa total
     int totalMulta = calcularMultaPorDia(libro);
-    
+
     // Imprimir la multa total
     printf("Multa total: %d\n", totalMulta);
 
@@ -169,8 +202,6 @@ void cancelarMulta(struct Usuario *usuario)
 
     // Imprimir mensaje de multa cancelada
     printf("Multa cancelada para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
-
-    
 }
 
 int tieneMultas(struct Usuario *usuario)
@@ -192,36 +223,47 @@ int tienePrestamo(struct Usuario *usuario)
     return (usuario->numLibros > 0);
 }
 
-
-
 int main()
 {
     struct Usuario usuarios[100];
+    struct Libro biblioteca[10];
 
     // Inicializar usuarios
-    
-
-    
-
-
     int numUsuarios = 0;
+    int numLibros = 0;
 
-    //imprimir dia actual
-
-    int dia, mes, anio;
     time_t tiempo = time(0);
     struct tm *tlocal = localtime(&tiempo);
     dia = tlocal->tm_mday;
     mes = tlocal->tm_mon + 1;
     anio = tlocal->tm_year + 1900;
-
+    // imprimir dia actual
     printf("Fecha actual: %d/%d/%d\n", dia, mes, anio);
-    
+
     printf("Dia: %d\n", dia);
     printf("Mes: %d\n", mes);
     printf("Anio: %d\n", anio);
 
-    
+    // Agregar libros a la biblioteca
+    strcpy(biblioteca[numLibros].titulo, "Don Quijote");
+    biblioteca[numLibros].estado = 0;
+    biblioteca[numLibros].multa = 400;
+    numLibros++;
+
+    strcpy(biblioteca[numLibros].titulo, "El Principito");
+    biblioteca[numLibros].estado = 1;
+    biblioteca[numLibros].multa = 300;
+    numLibros++;
+
+    strcpy(biblioteca[numLibros].titulo, "Cocori");
+    biblioteca[numLibros].estado = 0;
+    biblioteca[numLibros].multa = 200;
+    numLibros++;
+
+    strcpy(biblioteca[numLibros].titulo, "El Gran Divorcio");
+    biblioteca[numLibros].estado = 0;
+    biblioteca[numLibros].multa = 750;
+
     // Agregar un usuario sin multas
     strcpy(usuarios[numUsuarios].correo, "a");
     strcpy(usuarios[numUsuarios].nombre, "Juan");
@@ -237,16 +279,12 @@ int main()
     strcpy(usuarios[numUsuarios].contrasena, "b");
     usuarios[numUsuarios].numLibros = 1; // Un libro prestado
     strcpy(usuarios[numUsuarios].libros[0].titulo, "Libro con multa");
-    usuarios[numUsuarios].libros[0].fechaPrestamo.tm_mday = 1; // Día de préstamo
-    usuarios[numUsuarios].libros[0].fechaPrestamo.tm_mon = 1; // Mes de préstamo
+    usuarios[numUsuarios].libros[0].fechaPrestamo.tm_mday = 1;    // Día de préstamo
+    usuarios[numUsuarios].libros[0].fechaPrestamo.tm_mon = 1;     // Mes de préstamo
     usuarios[numUsuarios].libros[0].fechaPrestamo.tm_year = 2020; // Año de préstamo
-
-    usuarios[numUsuarios].libros[0].estado = 1; // Libro prestado
-    usuarios[numUsuarios].libros[0].multa = 150; // Multa asociada al libro
+    usuarios[numUsuarios].libros[0].estado = 1;                   // Libro prestado
+    usuarios[numUsuarios].libros[0].multa = 150;                  // Multa asociada al libro
     numUsuarios++;
-
-    
-
 
     int opcion;
     do
@@ -304,7 +342,7 @@ int main()
                         switch (opcionUsuario)
                         {
                         case 1:
-                            solicitarPrestamo(usuarioActual);
+                            solicitarPrestamo(usuarioActual, biblioteca, numLibros);
                             break;
                         case 2:
                             devolverLibro(usuarioActual);
