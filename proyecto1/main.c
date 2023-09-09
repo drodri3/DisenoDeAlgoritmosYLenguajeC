@@ -297,7 +297,7 @@ void reportarLibroPerdido(struct Usuario *usuario)
         if (librosConMulta == 0)
         {
             printf("No tiene ningun prestamo de libro para reportarlo como perdido.");
-            return 0;
+            return;
 
         }
         
