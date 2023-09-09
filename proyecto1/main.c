@@ -102,9 +102,6 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
     (*numUsuarios)++;
 }
 
-#include <stdio.h>
-#include <string.h>
-#include "contrasena.h"
 
 int iniciarSesion(struct Usuario usuarios[], int numUsuarios) {
     char correo[100];
