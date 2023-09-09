@@ -51,7 +51,8 @@ void imprimirMenuUsuario()
     printf("1. Solicitar un préstamo.\n");
     printf("2. Devolver un libro.\n");
     printf("3. Reportar libro perdido.\n");
-    printf("4. Salir\n");
+    printf("4. Imprimir reporte.\n");
+    printf("5. Salir\n");
 }
 
 // Función para guardar el usuario y la contraseña en un archivo
@@ -277,10 +278,29 @@ void reportarLibroPerdido(struct Usuario *usuario)
     if (!usuario->numLibros == 0)
     {
         printf("Libros con multa:\n");
+        int librosConMulta = 0;
         for (int i = 0; i < usuario->numLibros; i++)
         {
-            printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
+            // validar si el libro no es 2 (que ya se perdio)
+            if (usuario->libros[i].estado != 2)
+            {
+                printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
+                librosConMulta++;
+            }
+            else 
+            {
+                printf("Este libro ya se reporto como perdido: %s\n", usuario->libros[i].titulo);
+            }
+            
+            
         }
+        if (librosConMulta == 0)
+        {
+            printf("No tiene ningun prestamo de libro para reportarlo como perdido.");
+            return 0;
+
+        }
+        
 
         // Solicitar el libro que quiere reportar perdido
         int opcionLibro;
@@ -292,6 +312,20 @@ void reportarLibroPerdido(struct Usuario *usuario)
 
         // Calcular la multa total
         int totalMulta = calcularMultaPorExtravio();
+
+
+
+        // actualizar el estado del libro en la biblioteca
+        for (int i = 0; i < 10; i++)
+        {
+            if (strcmp(libro->titulo, usuario->libros[i].titulo) == 0)
+            {
+                usuario->libros[i].estado = 2;
+                break;
+            }
+        }
+
+
 
         // Imprimir la multa total
         printf("Multa total: %d\n", totalMulta);
@@ -357,6 +391,29 @@ int tienePrestamo(struct Usuario *usuario)
     return (usuario->numLibros > 0);
 }
 
+
+void imprimirReporte(struct Usuario *usuario)
+{
+    printf("Reporte de usuario:\n");
+    printf("Nombre: %s %s\n", usuario->nombre, usuario->apellido);
+    printf("Correo: %s\n", usuario->correo);
+    printf("Libros prestados: %d\n", usuario->numLibros);
+    for (int i = 0; i < usuario->numLibros; i++)
+    {
+        printf("  %d. %s\n", i + 1, usuario->libros[i].titulo);
+        printf("    Fecha de préstamo: %d/%d/%d\n", usuario->libros[i].fechaPrestamo.tm_mday, usuario->libros[i].fechaPrestamo.tm_mon, usuario->libros[i].fechaPrestamo.tm_year);
+        printf("    Multa: %d\n", usuario->libros[i].multa);
+
+    }
+    //multa total
+    int totalMulta = 0;
+    for (int i = 0; i < usuario->numLibros; i++)
+    {
+        totalMulta += usuario->libros[i].multa;
+    }
+    printf("Multa total: %d\n", totalMulta);
+}
+
 int main()
 {
     struct Usuario usuarios[100];
@@ -381,22 +438,22 @@ int main()
     // Agregar libros a la biblioteca
     strcpy(biblioteca[numLibros].titulo, "Don Quijote");
     biblioteca[numLibros].estado = 0;
-    biblioteca[numLibros].multa = 400;
+    biblioteca[numLibros].multa = 0;
     numLibros++;
 
     strcpy(biblioteca[numLibros].titulo, "El Principito");
     biblioteca[numLibros].estado = 1;
-    biblioteca[numLibros].multa = 300;
+    biblioteca[numLibros].multa = 0;
     numLibros++;
 
     strcpy(biblioteca[numLibros].titulo, "Cocori");
     biblioteca[numLibros].estado = 0;
-    biblioteca[numLibros].multa = 200;
+    biblioteca[numLibros].multa = 0;
     numLibros++;
 
     strcpy(biblioteca[numLibros].titulo, "El Gran Divorcio");
     biblioteca[numLibros].estado = 0;
-    biblioteca[numLibros].multa = 750;
+    biblioteca[numLibros].multa = 0;
     numLibros++;
 
     // Agregar un usuario sin multas
@@ -450,6 +507,7 @@ int main()
                     int opcionMultas;
                     do
                     {
+                        imprimirReporte(usuarioActual);
                         imprimirMenuMultas();
                         printf("Elija una opción: ");
                         scanf("%d", &opcionMultas);
@@ -490,12 +548,15 @@ int main()
                             reportarLibroPerdido(usuarioActual);
                             break;
                         case 4:
+                            imprimirReporte(usuarioActual);
+                            break;
+                        case 5:
                             printf("Saliendo del menú de usuario.\n");
                             break;
                         default:
                             printf("Opción no válida.\n");
                         }
-                    } while (opcionUsuario != 4);
+                    } while (opcionUsuario != 5);
                 }
             }
             else
