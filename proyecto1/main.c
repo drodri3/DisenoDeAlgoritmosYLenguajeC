@@ -4,11 +4,14 @@
 #include <time.h>
 #include "contrasena.h"
 
-//comando para compilar main.c y contrasena.c
-//gcc main.c contrasena.c -o main
+// comando para compilar main.c y contrasena.c
+// gcc main.c contrasena.c -o main
 
 // Variables globales
 int dia, mes, anio;
+int multaPorDia = 75;
+int multaPorExtravio = 500;
+
 struct Libro
 {
     char titulo[100];
@@ -26,9 +29,6 @@ struct Usuario
     struct Libro libros[10]; // Cambiar el tamaño del array según sea necesario
     int numLibros;           // Número de libros prestados
 };
-
-int multaPorDia = 75;
-int multaPorExtravio = 500;
 
 void imprimirMenuPrincipal()
 {
@@ -48,17 +48,20 @@ void imprimirMenuMultas()
 void imprimirMenuUsuario()
 {
     printf("\nMenú de Opciones\n");
-    printf("1. Solicitar un préstamo\n");
-    printf("2. Devolver un libro\n");
-    printf("3. Salir\n");
+    printf("1. Solicitar un préstamo.\n");
+    printf("2. Devolver un libro.\n");
+    printf("3. Reportar libro perdido.\n");
+    printf("4. Salir\n");
 }
 
 // Función para guardar el usuario y la contraseña en un archivo
-void guardarUsuario(struct Usuario usuario) {
+void guardarUsuario(struct Usuario usuario)
+{
     FILE *archivo;
     archivo = fopen("usuarios.txt", "a"); // Abre el archivo en modo de añadir
 
-    if (archivo == NULL) {
+    if (archivo == NULL)
+    {
         printf("Error al abrir el archivo.\n");
         return;
     }
@@ -72,7 +75,8 @@ void guardarUsuario(struct Usuario usuario) {
     fclose(archivo);
 }
 
-void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
+void registrarUsuario(struct Usuario usuarios[], int *numUsuarios)
+{
     printf("Registro de Usuario\n");
     printf("Correo electrónico: ");
     scanf("%s", usuarios[*numUsuarios].correo);
@@ -83,7 +87,8 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
 
     // Solicitar una contraseña válida
     bool contrasenaValida = false;
-    while (!contrasenaValida) {
+    while (!contrasenaValida)
+    {
         printf("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.\n");
         printf("Contraseña: ");
         scanf("%s", usuarios[*numUsuarios].contrasena);
@@ -91,7 +96,8 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
         // Verificar si la contraseña es válida
         contrasenaValida = esContrasenaValida(usuarios[*numUsuarios].contrasena);
 
-        if (!contrasenaValida) {
+        if (!contrasenaValida)
+        {
             printf("La contraseña no cumple con los requisitos. Inténtelo de nuevo.\n");
         }
     }
@@ -103,7 +109,8 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
 }
 
 
-int iniciarSesion(struct Usuario usuarios[], int numUsuarios) {
+int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
+{
     char correo[100];
     char contrasena[50];
 
@@ -113,11 +120,16 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios) {
     printf("Contraseña: ");
     scanf("%s", contrasena);
 
-    for (int i = 0; i < numUsuarios; i++) {
-        if (strcmp(correo, usuarios[i].correo) == 0) {
-            if (strcmp(contrasena, usuarios[i].contrasena) == 0) {
+    for (int i = 0; i < numUsuarios; i++)
+    {
+        if (strcmp(correo, usuarios[i].correo) == 0)
+        {
+            if (strcmp(contrasena, usuarios[i].contrasena) == 0)
+            {
                 return i; // Inicio de sesión exitoso
-            } else {
+            }
+            else
+            {
                 printf("Contraseña incorrecta.\n");
                 return -1; // Contraseña incorrecta
             }
@@ -127,7 +139,6 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios) {
     printf("Correo electrónico no encontrado.\n");
     return -1; // Correo electrónico no encontrado
 }
-
 
 void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int tamanoBiblioteca)
 {
@@ -144,14 +155,14 @@ void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int t
         {
             printf("  %d. %s\n", i, biblioteca[i].titulo);
             contador++;
-        }      
+        }
     }
-    printf("  %d. Salir\n", contador + 1);
-    printf("Seleccione el libro que desea solicitar: ");  
+    printf("  %d. Salir\n", tamanoBiblioteca);
+    printf("Seleccione el libro que desea solicitar: ");
     scanf("%d", &opcion);
     // Registrar prestamo
-    if (opcion <= contador)
-    {        
+    if (opcion < tamanoBiblioteca)
+    {
         biblioteca[opcion].estado = 1;
         usuario->libros[cantidadDeLibrosDelUsuario].estado = biblioteca[opcion].estado;
         strcpy(usuario->libros[cantidadDeLibrosDelUsuario].titulo, biblioteca[opcion].titulo);
@@ -162,7 +173,8 @@ void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int t
 
         printf("Se ha solicitado el prestamo del libro %s de manera exitosa para el usuario %s.\n", usuario->libros[cantidadDeLibrosDelUsuario].titulo, usuario->nombre);
 
-        usuario->numLibros = ++cantidadDeLibrosDelUsuario;
+        usuario->numLibros++;
+        cantidadDeLibrosDelUsuario++;
     }
 }
 
@@ -172,50 +184,60 @@ void devolverLibro(struct Usuario *usuario, struct Libro biblioteca[], int taman
     printf("Función: Devolver un libro para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
     // aca hay que meter todo lo de devolver un libro, tanto el costo de pagar por dias sin pagar, como el costo si se extravio
 
-    if (usuario->numLibros == 0) {
+    if (usuario->numLibros == 0)
+    {
 
         printf("  No tiene libros por devolver.\n ");
+    }
+    else
+    {
 
-    } else {
-    
         // Imprimir la lista de libros.
         printf("Libros prestados: %d\n", usuario->numLibros);
-        for (int i = 0; i < usuario->numLibros; i++)
+        int i = 0;
+        do
         {
-            // recorre el arreglo biblioteca para determinar el índice del libro 
-            for (int j = 0; j < tamanoBiblioteca; j ++) {
-                // verifica el índice en el arreglo biblioteca para mostrarlo a la hora de imprimir en pantalla el libro prestado
-                if (strcmp(usuario->libros[i].titulo, biblioteca[j].titulo) == 0) {
-                    printf("    %d. %s.\n", i + 1, usuario->libros[i].titulo);
+            if (usuario->libros[i].estado == 1)
+            {
+                // recorre el arreglo biblioteca para determinar el índice del libro
+                for (int j = 0; j < tamanoBiblioteca; j++)
+                {
+                    // verifica el índice en el arreglo biblioteca para mostrarlo a la hora de imprimir en pantalla el libro prestado
+                    if (strcmp(usuario->libros[i].titulo, biblioteca[j].titulo) == 0)
+                    {
+                        printf("    %d. %s.\n", j, biblioteca[j].titulo);
+                        // i ++;
+                        break;
+                    }
                 }
             }
-        }
+            i++;
+        } while (i < usuario->numLibros);
+
         printf("      Seleccione el libro que desea devolver: ");
         scanf("%d", &opcion);
 
-        if (opcion > tamanoBiblioteca) {
-            printf("  Seleccione un libro válido.");        
-        } else {
-
-            // marca como devuelto el libro en el arreglo de libros del usuario
-            usuario->libros[opcion - 1].estado = 0;
-            // recorre el arreglo biblioteca para determinar el índice del libro 
-            for (int j = 0; j < tamanoBiblioteca; j ++) {
-                // marca como devuelto el libro en el arreglo de la biblioteca
-                if (strcmp(usuario->libros[opcion - 1].titulo, biblioteca[j].titulo) == 0) {
-                    biblioteca[j].estado = 0;
+        if (opcion > tamanoBiblioteca)
+        {
+            printf("  Seleccione un libro válido.");
+        }
+        else
+        {
+            // recorre el arreglo biblioteca para determinar el índice del libro
+            for (int j = 0; j < tamanoBiblioteca; j++)
+            {
+                // marca como devuelto el libro en el arreglo de la biblioteca y en el arreglo de libros de usuario
+                if (strcmp(usuario->libros[j].titulo, biblioteca[opcion].titulo) == 0)
+                {
+                    biblioteca[opcion].estado = 0;
+                    usuario->libros[j].estado = 0;
+                    break;
                 }
             }
-            usuario->numLibros --;
-            printf("  Libro devuelto a la biblioteca.");
+            usuario->numLibros--;
+            printf("  Libro devuelto a la biblioteca.\n");
         }
-        
-        
-        
-    
-
     }
-
 }
 
 int calcularMultaPorDia(struct Libro *libro)
@@ -243,12 +265,45 @@ int calcularMultaPorDia(struct Libro *libro)
     return totalMulta;
 }
 
-int calcularMultaPorExtravio(struct Libro *libro)
+int calcularMultaPorExtravio()
 {
 
     return multaPorExtravio;
 }
 
+void reportarLibroPerdido(struct Usuario *usuario)
+{
+    // Imprimir la lista de libros.
+    if (!usuario->numLibros == 0)
+    {
+        printf("Libros con multa:\n");
+        for (int i = 0; i < usuario->numLibros; i++)
+        {
+            printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
+        }
+
+        // Solicitar el libro que quiere reportar perdido
+        int opcionLibro;
+        printf("Elija el libro que desea reportar como perdido: ");
+        scanf("%d", &opcionLibro);
+
+        // Obtener el libro seleccionado
+        struct Libro *libro = &usuario->libros[opcionLibro - 1];
+
+        // Calcular la multa total
+        int totalMulta = calcularMultaPorExtravio();
+
+        // Imprimir la multa total
+        printf("Multa total: %d\n", totalMulta);
+
+        // Imprimir mensaje de multa cancelada
+        printf("Multa cancelada para el usuario %s %s.\n", usuario->nombre, usuario->apellido);
+    }
+    else
+    {
+        printf("No tiene ningun prestamo de libro para reportarlo como perdido.");
+    }
+}
 void cancelarMulta(struct Usuario *usuario)
 {
 
@@ -363,7 +418,7 @@ int main()
     usuarios[numUsuarios].libros[0].fechaPrestamo.tm_mon = 1;     // Mes de préstamo
     usuarios[numUsuarios].libros[0].fechaPrestamo.tm_year = 2020; // Año de préstamo
     usuarios[numUsuarios].libros[0].estado = 1;                   // Libro prestado
-    usuarios[numUsuarios].libros[0].multa = 150;                  // Multa asociada al libro
+    usuarios[numUsuarios].libros[0].multa = 1;                    // Multa asociada al libro
     numUsuarios++;
 
     int opcion;
@@ -377,8 +432,9 @@ int main()
         {
         case 1:
             registrarUsuario(usuarios, &numUsuarios);
-            if (esContrasenaValida(usuarios[numUsuarios - 1].contrasena)) {
-                    guardarUsuario(usuarios[numUsuarios - 1]);
+            if (esContrasenaValida(usuarios[numUsuarios - 1].contrasena))
+            {
+                guardarUsuario(usuarios[numUsuarios - 1]);
             }
             break;
         case 2:
@@ -431,12 +487,15 @@ int main()
                             devolverLibro(usuarioActual, biblioteca, numLibros);
                             break;
                         case 3:
+                            reportarLibroPerdido(usuarioActual);
+                            break;
+                        case 4:
                             printf("Saliendo del menú de usuario.\n");
                             break;
                         default:
                             printf("Opción no válida.\n");
                         }
-                    } while (opcionUsuario != 3);
+                    } while (opcionUsuario != 4);
                 }
             }
             else
