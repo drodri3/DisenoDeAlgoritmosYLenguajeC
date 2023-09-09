@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include "contrasena.h"
+
+
 // Variables globales
 int dia, mes, anio;
 struct Libro
@@ -47,8 +50,7 @@ void imprimirMenuUsuario()
     printf("3. Salir\n");
 }
 
-void registrarUsuario(struct Usuario usuarios[], int *numUsuarios)
-{
+void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
     printf("Registro de Usuario\n");
     printf("Correo electrónico: ");
     scanf("%s", usuarios[*numUsuarios].correo);
@@ -56,8 +58,21 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios)
     scanf("%s", usuarios[*numUsuarios].nombre);
     printf("Apellido: ");
     scanf("%s", usuarios[*numUsuarios].apellido);
-    printf("Contraseña: ");
-    scanf("%s", usuarios[*numUsuarios].contrasena);
+
+    // Solicitar una contraseña válida
+    bool contrasenaValida = false;
+    while (!contrasenaValida) {
+        printf("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.\n");
+        printf("Contraseña: ");
+        scanf("%s", usuarios[*numUsuarios].contrasena);
+
+        // Verificar si la contraseña es válida
+        contrasenaValida = esContrasenaValida(usuarios[*numUsuarios].contrasena);
+
+        if (!contrasenaValida) {
+            printf("La contraseña no cumple con los requisitos. Inténtelo de nuevo.\n");
+        }
+    }
 
     // Inicializar el número de libros prestados a 0
     usuarios[*numUsuarios].numLibros = 0;

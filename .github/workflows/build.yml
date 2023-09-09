@@ -13,7 +13,7 @@ jobs:
     - name: Build C project
       run: |
         cd proyecto1  # Navegar a la carpeta del proyecto
-        gcc -o ejecutableProyecto1 main.c  # compila el proyecto y genera el ejecutable
+        gcc -o ejecutableProyecto1 main.c contrasena.c   # compila el proyecto y genera el ejecutable
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
