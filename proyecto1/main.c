@@ -3,6 +3,8 @@
 #include <time.h>
 #include "contrasena.h"
 
+//comando para compilar main.c y contrasena.c
+//gcc main.c contrasena.c -o main
 
 // Variables globales
 int dia, mes, anio;
