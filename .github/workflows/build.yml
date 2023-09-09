@@ -14,7 +14,6 @@ jobs:
       run: |
         cd proyecto1  # Navegar a la carpeta del proyecto
         gcc -o ejecutableProyecto1 main.c contrasena.c   # compila el proyecto y genera el ejecutable
-        ./ejecutableProyecto1  # Ejecuta el programa
 
 
     - name: Upload Artifact
