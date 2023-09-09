@@ -149,11 +149,11 @@ void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int t
             contador++;
         }      
     }
-    printf("  %d. Salir\n", contador + 1);
+    printf("  %d. Salir\n", tamanoBiblioteca);
     printf("Seleccione el libro que desea solicitar: ");  
     scanf("%d", &opcion);
     // Registrar prestamo
-    if (opcion <= contador)
+    if (opcion < tamanoBiblioteca)
     {        
         biblioteca[opcion].estado = 1;
         usuario->libros[cantidadDeLibrosDelUsuario].estado = biblioteca[opcion].estado;
@@ -165,7 +165,8 @@ void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int t
 
         printf("Se ha solicitado el prestamo del libro %s de manera exitosa para el usuario %s.\n", usuario->libros[cantidadDeLibrosDelUsuario].titulo, usuario->nombre);
 
-        usuario->numLibros = ++cantidadDeLibrosDelUsuario;
+        usuario->numLibros ++;
+        cantidadDeLibrosDelUsuario ++;
     }
 }
 
@@ -183,42 +184,41 @@ void devolverLibro(struct Usuario *usuario, struct Libro biblioteca[], int taman
     
         // Imprimir la lista de libros.
         printf("Libros prestados: %d\n", usuario->numLibros);
-        for (int i = 0; i < usuario->numLibros; i++)
-        {
-            // recorre el arreglo biblioteca para determinar el índice del libro 
-            for (int j = 0; j < tamanoBiblioteca; j ++) {
-                // verifica el índice en el arreglo biblioteca para mostrarlo a la hora de imprimir en pantalla el libro prestado
-                if (strcmp(usuario->libros[i].titulo, biblioteca[j].titulo) == 0) {
-                    printf("    %d. %s.\n", i + 1, usuario->libros[i].titulo);
+        int i = 0;
+        do {
+            if (usuario->libros[i].estado == 1) {
+                // recorre el arreglo biblioteca para determinar el índice del libro 
+                for (int j = 0; j < tamanoBiblioteca; j ++) {
+                    // verifica el índice en el arreglo biblioteca para mostrarlo a la hora de imprimir en pantalla el libro prestado
+                    if (strcmp(usuario->libros[i].titulo, biblioteca[j].titulo) == 0)  {
+                        printf("    %d. %s.\n", j, biblioteca[j].titulo);
+                        //i ++;
+                        break;
+                    }
                 }
             }
-        }
+            i ++;
+        } while (i <= usuario->numLibros);
+
         printf("      Seleccione el libro que desea devolver: ");
         scanf("%d", &opcion);
 
         if (opcion > tamanoBiblioteca) {
             printf("  Seleccione un libro válido.");        
-        } else {
-
-            // marca como devuelto el libro en el arreglo de libros del usuario
-            usuario->libros[opcion - 1].estado = 0;
+        } else {          
             // recorre el arreglo biblioteca para determinar el índice del libro 
             for (int j = 0; j < tamanoBiblioteca; j ++) {
-                // marca como devuelto el libro en el arreglo de la biblioteca
-                if (strcmp(usuario->libros[opcion - 1].titulo, biblioteca[j].titulo) == 0) {
-                    biblioteca[j].estado = 0;
-                }
+                // marca como devuelto el libro en el arreglo de la biblioteca y en el arreglo de libros de usuario
+                if (strcmp(usuario->libros[j].titulo, biblioteca[opcion].titulo) == 0) {
+                    biblioteca[opcion].estado = 0;
+                    usuario->libros[j].estado = 0;
+                    break;
+                }                
             }
             usuario->numLibros --;
-            printf("  Libro devuelto a la biblioteca.");
+            printf("  Libro devuelto a la biblioteca.\n");
         }
-        
-        
-        
-    
-
     }
-
 }
 
 int calcularMultaPorDia(struct Libro *libro)
