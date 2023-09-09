@@ -1,22 +1,33 @@
-name: Build C Project
+name: Build and Test C Project
 
-on: [push]  # Ejecutar la acción en cada push al repositorio
+on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # Selecciona el sistema operativo en el que deseas compilar (Ubuntu en este caso)
+  build_and_test:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2  # Acción para clonar el repositorio en el entorno de trabajo
+      uses: actions/checkout@v2
 
     - name: Build C project
       run: |
-        cd proyecto1  # Navegar a la carpeta del proyecto
-        gcc -o ejecutableProyecto1 main.c contrasena.c   # compila el proyecto y genera el ejecutable
+        cd proyecto1
+        gcc -o ejecutableProyecto1 main.c contrasena.c
+
+    - name: Create test user file
+      run: |
+        cd proyecto1
+        echo "TestUser1" > test_user.txt
+        echo "TestPassword1" >> test_user.txt
+
+    - name: Run the program with test user data
+      run: |
+        cd proyecto1
+        ./ejecutableProyecto1 < test_user.txt
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: ejecutableProyecto1
-        path: proyecto1/ejecutableProyecto1  # Ruta al archivo ejecutable compilado que deseas subir
+        path: proyecto1/ejecutableProyecto1
