@@ -403,6 +403,24 @@ void imprimirReporte(struct Usuario *usuario)
         printf("  %d. %s\n", i + 1, usuario->libros[i].titulo);
         printf("    Fecha de préstamo: %d/%d/%d\n", usuario->libros[i].fechaPrestamo.tm_mday, usuario->libros[i].fechaPrestamo.tm_mon, usuario->libros[i].fechaPrestamo.tm_year);
         printf("    Multa: %d\n", usuario->libros[i].multa);
+        if (usuario->libros[i].estado == 0)
+        {
+            printf("    Estado: Disponible\n");
+        }
+        else if (usuario->libros[i].estado == 1)
+        {
+            printf("    Estado: Prestado\n");
+        }
+        else if (usuario->libros[i].estado == 2)
+        {
+            printf("    Estado: Extraviado\n");
+        }
+        else
+        {
+            printf("    Estado: Desconocido\n");
+        }
+
+        
 
     }
     //multa total
