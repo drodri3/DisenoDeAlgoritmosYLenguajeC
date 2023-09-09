@@ -109,7 +109,6 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios)
     (*numUsuarios)++;
 }
 
-
 int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
 {
     char correo[100];
@@ -287,20 +286,16 @@ void reportarLibroPerdido(struct Usuario *usuario)
                 printf("%d. %s\n", i + 1, usuario->libros[i].titulo);
                 librosConMulta++;
             }
-            else 
+            else
             {
                 printf("Este libro ya se reporto como perdido: %s\n", usuario->libros[i].titulo);
             }
-            
-            
         }
         if (librosConMulta == 0)
         {
             printf("No tiene ningun prestamo de libro para reportarlo como perdido.");
             return;
-
         }
-        
 
         // Solicitar el libro que quiere reportar perdido
         int opcionLibro;
@@ -313,8 +308,6 @@ void reportarLibroPerdido(struct Usuario *usuario)
         // Calcular la multa total
         int totalMulta = calcularMultaPorExtravio();
 
-
-
         // actualizar el estado del libro en la biblioteca
         for (int i = 0; i < 10; i++)
         {
@@ -324,8 +317,6 @@ void reportarLibroPerdido(struct Usuario *usuario)
                 break;
             }
         }
-
-
 
         // Imprimir la multa total
         printf("Multa total: %d\n", totalMulta);
@@ -391,7 +382,6 @@ int tienePrestamo(struct Usuario *usuario)
     return (usuario->numLibros > 0);
 }
 
-
 void imprimirReporte(struct Usuario *usuario)
 {
     printf("Reporte de usuario:\n");
@@ -419,11 +409,8 @@ void imprimirReporte(struct Usuario *usuario)
         {
             printf("    Estado: Desconocido\n");
         }
-
-        
-
     }
-    //multa total
+    // multa total
     int totalMulta = 0;
     for (int i = 0; i < usuario->numLibros; i++)
     {
