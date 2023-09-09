@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <time.h>
 #include "contrasena.h"
 
@@ -52,6 +53,25 @@ void imprimirMenuUsuario()
     printf("3. Salir\n");
 }
 
+// Función para guardar el usuario y la contraseña en un archivo
+void guardarUsuario(struct Usuario usuario) {
+    FILE *archivo;
+    archivo = fopen("usuarios.txt", "a"); // Abre el archivo en modo de añadir
+
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo.\n");
+        return;
+    }
+
+    fprintf(archivo, "Correo: %s\n", usuario.correo);
+    fprintf(archivo, "Nombre: %s\n", usuario.nombre);
+    fprintf(archivo, "Apellido: %s\n", usuario.apellido);
+    fprintf(archivo, "Contraseña: %s\n", usuario.contrasena);
+    fprintf(archivo, "Número de libros prestados: %d\n", usuario.numLibros);
+
+    fclose(archivo);
+}
+
 void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
     printf("Registro de Usuario\n");
     printf("Correo electrónico: ");
@@ -82,8 +102,11 @@ void registrarUsuario(struct Usuario usuarios[], int *numUsuarios) {
     (*numUsuarios)++;
 }
 
-int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
-{
+#include <stdio.h>
+#include <string.h>
+#include "contrasena.h"
+
+int iniciarSesion(struct Usuario usuarios[], int numUsuarios) {
     char correo[100];
     char contrasena[50];
 
@@ -93,16 +116,21 @@ int iniciarSesion(struct Usuario usuarios[], int numUsuarios)
     printf("Contraseña: ");
     scanf("%s", contrasena);
 
-    for (int i = 0; i < numUsuarios; i++)
-    {
-        if (strcmp(correo, usuarios[i].correo) == 0 && strcmp(contrasena, usuarios[i].contrasena) == 0)
-        {
-            return i;
+    for (int i = 0; i < numUsuarios; i++) {
+        if (strcmp(correo, usuarios[i].correo) == 0) {
+            if (strcmp(contrasena, usuarios[i].contrasena) == 0) {
+                return i; // Inicio de sesión exitoso
+            } else {
+                printf("Contraseña incorrecta.\n");
+                return -1; // Contraseña incorrecta
+            }
         }
     }
 
-    return -1;
+    printf("Correo electrónico no encontrado.\n");
+    return -1; // Correo electrónico no encontrado
 }
+
 
 void solicitarPrestamo(struct Usuario *usuario, struct Libro biblioteca[], int tamanoBiblioteca)
 {
@@ -352,6 +380,9 @@ int main()
         {
         case 1:
             registrarUsuario(usuarios, &numUsuarios);
+            if (esContrasenaValida(usuarios[numUsuarios - 1].contrasena)) {
+                    guardarUsuario(usuarios[numUsuarios - 1]);
+            }
             break;
         case 2:
         {
@@ -413,7 +444,7 @@ int main()
             }
             else
             {
-                printf("Inicio de sesión fallido. Usuario no encontrado.\n");
+                printf("Inicio de sesión fallido.\n");
             }
             break;
         }
